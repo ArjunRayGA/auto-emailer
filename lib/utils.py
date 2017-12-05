@@ -19,7 +19,6 @@ def rename_cols (df, col_rename_dict=None):
     return df
 
 def run_data_filters(df, data_filters=None):
-    print data_filters
     if not data_filters:
         return df
     for data_filter in data_filters:
@@ -27,10 +26,9 @@ def run_data_filters(df, data_filters=None):
             kwargs = data_filter['kwargs']
             filter_func = getattr(data_filters_lib, data_filter["name"])
             df = filter_func(df, **kwargs)
-            return df
         except AttributeError:
             pass    
-
+    return df
 
 def find_replace_refs(JSON_obj):
 
@@ -38,7 +36,7 @@ def find_replace_refs(JSON_obj):
     file_path = os.path.abspath(filename)
     file_dir = os.path.dirname(file_path)
 
-    find_ref = re.compile('\$ref=(?:[.]{0,2})(?:[\/]{0,1})[\w\-. ]*.json::[\w\-. ]*')
+    find_ref = re.compile('\$ref=(?:[.]{0,2})(?:[\/]{0,1})[\w\-.\/]*.json::[\w\-. ]*')
 
     def find_regex(obj):
 
@@ -79,7 +77,6 @@ def find_replace_refs(JSON_obj):
             return new
 
     replaced_json = find_regex(JSON_obj["JSON"])
-    print replaced_json
     return replaced_json
 
 
@@ -88,7 +85,6 @@ def settings_loader(files):
     settings_dict = {}
 
     for item in json_list: 
-        print item['filename']
         setting_name = os.path.basename(item['filename']).replace('.json', '')
         settings_dict[setting_name] = find_replace_refs(item)
     
