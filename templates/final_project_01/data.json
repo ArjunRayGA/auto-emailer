@@ -1,0 +1,74 @@
+{
+    "mail_headers": {
+        "main_email": "deconstructionalism@gmail.com",
+        "cc_emails": ["robert.l.kelly3@gmail.com"],
+        "bcc_emails": []
+    },
+
+    "logic_nodes": [{
+        "function": "not_submit_not_present",
+        "body": "markdown/not_submit_not_present.md",
+        "title": "DAT-BOS-19 | Final Project Deliverable 1 - Incomplete"
+    }, {
+        "function": "submit_not_present",
+        "body": "markdown/submit_not_present.md",
+        "title": "DAT-BOS-19 | Final Project Deliverable 1 - Incomplete"
+    }, {
+        "function": "not_submit_present",
+        "body": "markdown/not_submit_present.md",
+        "title": "DAT-BOS-19 | Final Project Deliverable 1 - Incomplete"
+    }, {
+        "function": "submit_present",
+        "body": "markdown/submit_present.md",
+        "title": "DAT-BOS-19 | Final Project Deliverable 1 - Grade"
+    }],
+
+    "csv_load_settings": {
+        "skiprows": 3,
+        "csv_file": "data.csv",
+        "col_rename_dict": [{
+                "index": 0,
+                "name": "first_name"
+            }, {
+                "index": 1,
+                "name": "last_name"
+            }, {
+                "index": 2,
+                "name": "email"
+            }, {
+                "index": 14,
+                "name": "fp_1_1"
+            },
+            {
+                "index": 15,
+                "name": "fp_1_2"
+            },
+            {
+                "index": 16,
+                "name": "fp_1_3"
+            },
+            {
+                "index": 17,
+                "name": "fp_1_4"
+            },
+            {
+                "index": 18,
+                "name": "fp_1_sub"
+            }
+        ],
+        "data_filters": [{
+                "name": "col_val_exists",
+                "kwargs": {
+                    "col_name": "Email Address"
+                }
+            },
+            {
+                "name": "col_val_not_in_list",
+                "kwargs": {
+                    "col_name": "Email Address",
+                    "exclude_list": "$ref=../../shared/data/class_data.json::['dropped_students']"
+                }
+            }
+        ]
+    }
+}
