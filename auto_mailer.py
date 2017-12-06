@@ -19,11 +19,14 @@ def main(template_name):
     csv_path = os.path.join(template_path, csv_load_settings["csv_file"])
     data = pd.read_csv(csv_path, skiprows=csv_load_settings["skiprows"], header=1)
 
+    print data
+
     # run data filters
     data = run_data_filters(data, data_filters=csv_load_settings["data_filters"])
     
     # rename columns
     data = rename_cols(data, csv_load_settings["col_rename_dict"])
+
 
     # split data into template data using logic
     logic_nodes = settings["data"]["logic_nodes"]
@@ -47,7 +50,7 @@ def main(template_name):
                 "part_3_grade": row['fp_1_1'],
                 "part_4_grade": row['fp_1_1']
             }
-            markdown_compiler(body, **data_kwargs)
+            markdown_compiler(body, template_path, **data_kwargs)
 
     service = get_client()
     # test_client(service)
@@ -55,7 +58,8 @@ def main(template_name):
     # print logic_nodes
      
 
-if __name__ == "__main__": main("final_project_01")
+if __name__ == "__main__": 
+    main("final_project_01")
    
 
 

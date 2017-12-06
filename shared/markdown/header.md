@@ -1,3 +1,3 @@
 # ![](../img/header-logo-wide.png)
 
-Hi {recipient},
+Hi {{ recipient }},

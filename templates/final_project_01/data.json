@@ -54,19 +54,32 @@
             {
                 "index": 18,
                 "name": "fp_1_sub"
+            },
+            {
+                "index": 19,
+                "name": "fp_1_feedback"
+            },
+            {
+                "index": 20,
+                "name": "fp_1_total"
             }
         ],
         "data_filters": [{
-                "name": "col_val_exists",
+                "name": "row_val_exists",
                 "kwargs": {
                     "col_name": "Email Address"
                 }
             },
             {
-                "name": "col_val_not_in_list",
+                "name": "row_val_not_in_list",
                 "kwargs": {
                     "col_name": "Email Address",
-                    "exclude_list": "$ref=../../shared/data/class_data.json::['dropped_students']"
+                    "exclude_list": "{{ _ref = ('shared/data/class_data.json','dropped_students') }}"
+                }
+            },{
+                "name": "drop_cols",
+                "kwargs": {
+                    "col_indicies": []
                 }
             }
         ]

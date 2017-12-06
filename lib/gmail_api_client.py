@@ -46,10 +46,11 @@ def test_client(service):
 
 import markdown as md
 
-def markdown_compiler(body, **kwargs):
-    body_path = os.path.join(os.getcwd(), body)
-    print body_path, kwargs
-    md_file = open(body)
+def markdown_compiler(body, template_path, **kwargs):
+    body_path = os.path.abspath(os.path.join(template_path, body))
+    # print body_path, kwargs
+    with open(body_path, 'r') as f:
+        md_file = f.read()
     print md_file
     return False
     
@@ -62,7 +63,13 @@ def markdown_to_html(md_text):
 #     SendMessage(service, 'me', message)
 
 import base64
+from email.mime.audio import MIMEAudio
+from email.mime.base import MIMEBase
+from email.mime.image import MIMEImage
+from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+import mimetypes
+
 from apiclient import errors
 
 def send_message(service, user_id, message):
@@ -75,7 +82,6 @@ def send_message(service, user_id, message):
   except errors.HttpError:
     print('An error occurred: %s' % error)
 
-
 def create_message(sender, to, cc, bcc, subject, message_text):
   message = MIMEText(message_text, 'html')
   message['to'] = to
@@ -85,3 +91,39 @@ def create_message(sender, to, cc, bcc, subject, message_text):
   message['subject'] = subject
   return {'raw': base64.urlsafe_b64encode(message.as_string())}
 
+def create_message_with_attachment(sender, to, subject, message_text, file):
+  message = MIMEMultipart()
+  message['to'] = to
+  message['from'] = sender
+  message['subject'] = subject
+
+  msg = MIMEText(message_text)
+  message.attach(msg)
+
+  content_type, encoding = mimetypes.guess_type(file)
+
+  if content_type is None or encoding is not None:
+    content_type = 'application/octet-stream'
+  main_type, sub_type = content_type.split('/', 1)
+  if main_type == 'text':
+    fp = open(file, 'rb')
+    msg = MIMEText(fp.read(), _subtype=sub_type)
+    fp.close()
+  elif main_type == 'image':
+    fp = open(file, 'rb')
+    msg = MIMEImage(fp.read(), _subtype=sub_type)
+    fp.close()
+  elif main_type == 'audio':
+    fp = open(file, 'rb')
+    msg = MIMEAudio(fp.read(), _subtype=sub_type)
+    fp.close()
+  else:
+    fp = open(file, 'rb')
+    msg = MIMEBase(main_type, sub_type)
+    msg.set_payload(fp.read())
+    fp.close()
+  filename = os.path.basename(file)
+  msg.add_header('Content-Disposition', 'attachment', filename=filename)
+  message.attach(msg)
+
+  return {'raw': base64.urlsafe_b64encode(message.as_string())}
