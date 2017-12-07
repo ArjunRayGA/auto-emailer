@@ -53,14 +53,20 @@ def markdown_compiler(body, template_path, **kwargs):
         md_file = f.read()
     print md_file
     return False
-    
+
+
 
 def markdown_to_html(md_text):
     html = md.markdown(md_text)
     return html
-# def message
-#     message = CreateMessage('deconstructionalism@gmail.com', 'aray@brandeis.edu', 'arjun.ray@generalassemb.ly', 'arjun_ray@brown.edu', "test message", message)
-#     SendMessage(service, 'me', message)
+def test_message():
+    message = '''
+# ![](..shared/img/header-logo-wide.png)
+
+Hi {{ recipient }},    
+    '''
+    message = CreateMessage('deconstructionalism@gmail.com', 'aray@brandeis.edu', 'arjun.ray@generalassemb.ly', 'arjun_ray@brown.edu', "test message", message)
+    SendMessage(service, 'me', message)
 
 import base64
 from email.mime.audio import MIMEAudio
@@ -73,7 +79,6 @@ import mimetypes
 from apiclient import errors
 
 def send_message(service, user_id, message):
-
   try:
     message = (service.users().messages().send(userId=user_id, body=message)
                .execute())
@@ -91,13 +96,15 @@ def create_message(sender, to, cc, bcc, subject, message_text):
   message['subject'] = subject
   return {'raw': base64.urlsafe_b64encode(message.as_string())}
 
-def create_message_with_attachment(sender, to, subject, message_text, file):
+def create_message_with_attachment(sender, to, cc, bcc, subject, message_text, file):
   message = MIMEMultipart()
+  msg = MIMEText(message_text, 'html')
   message['to'] = to
   message['from'] = sender
+  message['cc'] = cc
+  message['bcc'] =  bcc
   message['subject'] = subject
 
-  msg = MIMEText(message_text)
   message.attach(msg)
 
   content_type, encoding = mimetypes.guess_type(file)

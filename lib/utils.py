@@ -1,13 +1,8 @@
 import json
-import re
 import os
-import copy
+import re
 import webbrowser
 import data_filters as data_filters_lib
-
-def popup_compose (email, title, markdown, cc_emails):
-    link_to_gmail = "https://mail.google.com/mail/?view=cm&fs=1&to={}&su={}&body={}&cc={}".format(email, title, markdown, cc_emails)
-    webbrowser.open_new(link_to_gmail)
 
 def rename_cols (df, col_rename_dict=None):
     if not col_rename_dict:
@@ -19,6 +14,7 @@ def rename_cols (df, col_rename_dict=None):
     return df
 
 def run_data_filters(df, data_filters=None):
+    print data_filters
     if not data_filters:
         return df
     for data_filter in data_filters:
@@ -30,6 +26,10 @@ def run_data_filters(df, data_filters=None):
             pass    
     return df
 
+def find_staches(text):
+    find_stach = re.compile("{{.+?}}")
+    return find_stach.findall(text)
+
 def find_replace_refs(JSON_obj):
 
     filename = JSON_obj["filename"]
@@ -37,6 +37,7 @@ def find_replace_refs(JSON_obj):
     file_dir = os.path.dirname(file_path)
 
     find_ref = re.compile('\$ref=(?:[.]{0,2})(?:[\/]{0,1})[\w\-.\/]*.json::[\w\-. ]*')
+    # find_ref = re.compile('_ref[ \t]*=.*')
 
     def find_regex(obj):
 
@@ -57,6 +58,9 @@ def find_replace_refs(JSON_obj):
             if type(val) in [dict, list]:
                 return find_regex(val)
             elif type(val) is unicode and find_ref.search(val):
+                # staches = find_staches(unicode)
+                # if len(staches = 1 )
+                # find_ref.search(val):
                 return insert_json(val)
             else:
                 return val

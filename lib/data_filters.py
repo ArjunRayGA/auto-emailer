@@ -14,6 +14,7 @@ def row_val_in_list(df, col_name, include_list, chain_func=default_chain_func):
     return chain_func(df[df[col_name].isin(include_list)])
 
 def drop_cols(df, col_names=None, col_indicies=None, chain_func=default_chain_func):
+    print col_indicies
     if col_names:
         return chain_func(df.drop(col_names, axis=1))
     if col_indicies:

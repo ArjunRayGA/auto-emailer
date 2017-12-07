@@ -27,6 +27,7 @@ def main(template_name):
     # rename columns
     data = rename_cols(data, csv_load_settings["col_rename_dict"])
 
+    print data
 
     # split data into template data using logic
     logic_nodes = settings["data"]["logic_nodes"]
