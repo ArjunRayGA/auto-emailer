@@ -38,19 +38,18 @@ class CompileFile(object):
 
         # self._file_cache = file_cache if file_cache else []
         self.file = None
-        self._path = os.path.abspath(os.path.join(root, file_path))
+        self.__path = os.path.abspath(os.path.join(root, file_path))
         self.context = {}
         self.staches = {
             'matches': [],
             'renders': []
-
         }
-        self._re = {
+        self.__re = {
             'stache': re.compile(r'{{.*}}'),
             'ref': re.compile(r'^{{[\s\t]*_ref[\s\t]*=[\s\t]*(\(.*\)|[\'\"].*[\'\"])[\s\t]*}}$')
         }
-        self._file_extensions = file_extensions
-        self._valid_context_types = valid_context_types
+        self.__file_extensions = file_extensions
+        self.__valid_context_types = valid_context_types
 
     def process_file(self):
         '''
@@ -59,7 +58,7 @@ class CompileFile(object):
         '''
 
         cache_paths = [f.path for f in FILE_CACHE.cache]
-        if self._path in cache_paths:
+        if self.__path in cache_paths:
             return
 
         self._load_file()
@@ -89,7 +88,7 @@ class CompileFile(object):
                     if isinstance(val, dict):
                         _is_valid_type(val)
                     else:
-                        assert isinstance(val, self._valid_context_types), \
+                        assert isinstance(val, self.__valid_context_types), \
                             'invalid type passed in context:\n    {}: {}'.format(key, type(val))
 
         try:
@@ -98,12 +97,21 @@ class CompileFile(object):
         except AssertionError as error:
             raise AssertionError, str(error)
 
+    def _set_re(self, re_name, re_regex):
+        assert isinstance(re_name, str), \
+            'expected re_name as str but got {}' \
+            .format(type(re_name))
+        assert isinstance(re_regex, re._pattern_type), \
+            'expected re_regex as regex object but got {}' \
+            .format(type(re_regex))
+        self.__re[re_name] = re_regex
+
     def _stache_search(self):
-        self.staches['matches'] = self._re['stache'].findall(self.file.contents)
+        self.staches['matches'] = self.__re['stache'].findall(self.file.contents)
 
     def _compile(self):
         for stache in self.staches['matches']:
-            if re.match(self._re['ref'], stache):
+            if re.match(self.__re['ref'], stache):
                 self.staches['renders'].append('s')
             else:
                 to_eval = stache.strip().strip('{}')
@@ -115,13 +123,13 @@ class CompileFile(object):
                     raise NameError, '{} in context dict'.format(str(error))
                 self.staches['renders'].append(eval_val)
         for i in range(len(self.staches['matches'])):
-            # if re.match(self._re['ref'], (self.staches['matches'][i]):
+            # if re.match(self.__re['ref'], (self.staches['matches'][i]):
 
-            self.file.contents = re.sub(self._re['stache'], self.staches['renders'][i],
+            self.file.contents = re.sub(self.__re['stache'], self.staches['renders'][i],
                                         self.file.contents)
 
     def _load_file(self):
-        self.file = File(self._path)
+        self.file = File(self.__path)
         self.file.load()
 
     def _finally(self):
@@ -134,8 +142,8 @@ class CompileJsonFile(CompileFile):
     def __init__(self, file_path, root, file_extensions,
                  valid_context_types):
         CompileFile.__init__(self, file_path, root, file_extensions, valid_context_types)
-        self._re["stache"] = \
-            re.compile(r'(?:\".*\":)[\s](?![{])[\"][\s]*({{.*}})[\s]*[\"]')
+        ref_re = re.compile(r'(?:\".*\":)[\s](?![{])[\"][\s]*({{.*}})[\s]*[\"]')
+        self._set_re('ref', ref_re)
     def _finally(self):
         self.file.contents = json.loads(self.file.contents)
         super(CompileJsonFile, self)._finally()

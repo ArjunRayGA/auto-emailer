@@ -32,11 +32,11 @@ def markstache(file_path, root='', file_extensions=FILE_EXTENSIONS,
 
 
 if __name__ == '__main__':
-    CACHE_FILE = File('/Users/gafrontlines/auto-emailer/shared/markdown/header.md')
+    CACHE_FILE = File('/Users/gafrontlines/auto-emailer/shared/markdown/headesdsr.md')
     FILE_CACHE.add_to_cache(CACHE_FILE)
-    MY_FILE = markstache('../shared/markdown/header.md')
+    # MY_FILE = markstache('../shared/markdown/header.md')
     # MY_FILE = markstache('../templates/final_project_01/data.json')
-    # MY_FILE = markstache('../shared/data/class_data.json')
+    MY_FILE = markstache('../shared/data/class_data.json')
     CONTEXT = {
         "str": "hi",
         "int": 1,
@@ -68,10 +68,12 @@ if __name__ == '__main__':
     }
     MY_FILE.set_context(CONTEXT)
     MY_FILE.process_file()
+    print MY_FILE._stache_search
     # print MY_FILE
     # print type(MY_FILE.file)
     # print MY_FILE.stache_matches
     # print MY_FILE.stache_renders
     # print MY_FILE.file.contents
     # print MY_FILE.staches
+    print FILE_CACHE.cache[1]
     print FILE_CACHE.cache[1].contents
